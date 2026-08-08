@@ -523,60 +523,90 @@ export async function renderTeamFrameToCanvas(
   const ctx = canvas.getContext("2d", { willReadFrequently: true });
   if (!ctx) throw new Error("Could not get 2D canvas context");
 
-  const radius = size * 0.045;
+  const radius = size * 0.058;
 
   ctx.save();
   roundRect(ctx, 0, 0, size, size, radius);
   ctx.clip();
 
-  // 1. Background
-  ctx.fillStyle = "#FBF6E9"; // Sand
+  // 1. Background (Jungle Green + Radial Gold Glow)
+  ctx.fillStyle = "#0A3A27"; // Deep Jungle Green
   ctx.fillRect(0, 0, size, size);
 
-  // Border frame
-  ctx.strokeStyle = "#0F4C33";
-  ctx.lineWidth = 10;
-  roundRect(ctx, 5, 5, size - 10, size - 10, radius);
-  ctx.stroke();
+  const grad = ctx.createRadialGradient(
+    size * 0.85,
+    0,
+    10,
+    size * 0.85,
+    0,
+    size * 0.65
+  );
+  grad.addColorStop(0, "rgba(246,201,14,0.22)");
+  grad.addColorStop(1, "transparent");
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, size, size);
 
-  // Palm frond watermark in top right
-  drawPalm(ctx, size * 0.88, size * 0.12, size * 0.0022, "#0F4C33", false, 0.25);
+  // Border frame (Gold dotted border)
+  const borderInset = size * 0.032;
+  drawDottedBorder(
+    ctx,
+    borderInset,
+    borderInset,
+    size - borderInset * 2,
+    size - borderInset * 2,
+    "#F6C90E",
+    size * 0.0035,
+    size * 0.02
+  );
+
+  // Palm fronds in top corners
+  drawPalm(ctx, size * 0.03, size * 0.05, size * 0.0016, "#F6C90E", true, 0.85);
+  drawPalm(ctx, size * 0.82, size * 0.05, size * 0.0016, "#E8177D", false, 0.75);
 
   // 2. Top Header
-  const marginX = size * 0.06;
-  const marginTop = size * 0.08;
+  const marginX = size * 0.065;
+  const marginTop = size * 0.07;
 
   // Title: "HACKER HOUSE GOA"
   ctx.font = `800 ${Math.round(size * 0.038)}px var(--font-display), "Fraunces", serif`;
-  ctx.fillStyle = "#0F4C33";
+  ctx.fillStyle = "#FBF6E9";
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
-  ctx.fillText("HACKER HOUSE GOA", marginX, marginTop);
+  ctx.fillText("HACKER HOUSE ", marginX, marginTop + size * 0.022);
 
-  // Subtitle: "OFFICIAL TEAM PASS · 2026"
-  ctx.font = `600 ${Math.round(size * 0.018)}px var(--font-mono), "IBM Plex Mono", monospace`;
-  ctx.fillStyle = "rgba(15, 76, 51, 0.7)";
-  ctx.fillText("OFFICIAL TEAM PASS · 2026", marginX, marginTop + size * 0.048);
+  const hhWidth = ctx.measureText("HACKER HOUSE ").width;
+  ctx.fillStyle = "#F6C90E";
+  ctx.fillText("GOA", marginX + hhWidth, marginTop + size * 0.022);
 
-  // Live pill tag top right
-  const liveX = size - marginX - size * 0.12;
-  const liveY = marginTop;
-  const liveW = size * 0.12;
-  const liveH = size * 0.04;
-  roundRect(ctx, liveX, liveY, liveW, liveH, liveH / 2);
-  ctx.fillStyle = "#0F4C33";
+  // Subtitle: "OFFICIAL TEAM PASS"
+  ctx.font = `600 ${Math.round(size * 0.016)}px var(--font-mono), "IBM Plex Mono", monospace`;
+  ctx.fillStyle = "#F6C90E";
+  ctx.fillText("OFFICIAL TEAM PASS", marginX, marginTop);
+
+  // Date Tag top right
+  const dateText = "28–31 OCT 2026";
+  ctx.font = `600 ${Math.round(size * 0.015)}px var(--font-mono), monospace`;
+  const dateW = ctx.measureText(dateText).width + size * 0.03;
+  const dateH = size * 0.038;
+  const dateX = size - marginX - dateW;
+  const dateY = marginTop + size * 0.005;
+
+  roundRect(ctx, dateX, dateY, dateW, dateH, dateH / 2);
+  ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
   ctx.fill();
+  ctx.strokeStyle = "rgba(246, 201, 14, 0.4)";
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
 
   ctx.fillStyle = "#F6C90E"; // Marigold dot
   ctx.beginPath();
-  ctx.arc(liveX + liveW * 0.25, liveY + liveH / 2, size * 0.007, 0, Math.PI * 2);
+  ctx.arc(dateX + dateW * 0.18, dateY + dateH / 2, size * 0.006, 0, Math.PI * 2);
   ctx.fill();
 
-  ctx.font = `700 ${Math.round(size * 0.016)}px var(--font-mono), monospace`;
-  ctx.fillStyle = "#FBF6E9";
+  ctx.fillStyle = "#F6C90E";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText("LIVE", liveX + liveW * 0.62, liveY + liveH / 2 + 1);
+  ctx.fillText(dateText, dateX + dateW * 0.58, dateY + dateH / 2 + 1);
 
   // 3. Middle Team Members (2 or 3)
   const count = fields.memberCount;
@@ -585,30 +615,28 @@ export async function renderTeamFrameToCanvas(
   const cardContainerWidth = size - marginX * 2;
   const cardGap = size * 0.04;
   const cardW = (cardContainerWidth - cardGap * (count - 1)) / count;
-  const cardH = size * 0.38;
+  const cardH = size * 0.36;
   const cardY = size * 0.28;
 
   for (let i = 0; i < count; i++) {
     const m = members[i];
     const cardX = marginX + i * (cardW + cardGap);
 
-    // Arched Top Container
+    // Rounded Card Container
     ctx.save();
-    const archRadius = cardW * 0.35;
-    ctx.beginPath();
-    ctx.moveTo(cardX, cardY + cardH);
-    ctx.lineTo(cardX, cardY + archRadius);
-    ctx.quadraticCurveTo(cardX, cardY, cardX + archRadius, cardY);
-    ctx.lineTo(cardX + cardW - archRadius, cardY);
-    ctx.quadraticCurveTo(cardX + cardW, cardY, cardX + cardW, cardY + archRadius);
-    ctx.lineTo(cardX + cardW, cardY + cardH);
-    ctx.closePath();
+    const cardRadius = cardW * 0.2;
+    roundRect(ctx, cardX, cardY, cardW, cardH, cardRadius);
 
-    ctx.fillStyle = "#0A3A27";
+    ctx.fillStyle = "#06261A";
+    ctx.shadowColor = "rgba(0,0,0,0.5)";
+    ctx.shadowBlur = 18;
+    ctx.shadowOffsetY = 8;
     ctx.fill();
+    ctx.shadowColor = "transparent";
 
-    ctx.strokeStyle = "#0F4C33";
-    ctx.lineWidth = 6;
+    // Gold Outer Ring Border
+    ctx.strokeStyle = "#F6C90E";
+    ctx.lineWidth = 5;
     ctx.stroke();
 
     ctx.clip();
@@ -631,30 +659,31 @@ export async function renderTeamFrameToCanvas(
 
         ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
       } catch {
-        ctx.fillStyle = "#0A3A27";
+        ctx.fillStyle = "#06261A";
         ctx.fillRect(cardX, cardY, cardW, cardH);
       }
     } else {
-      ctx.fillStyle = "#0F4C33";
+      ctx.fillStyle = "#06261A";
       ctx.fillRect(cardX, cardY, cardW, cardH);
       ctx.font = `800 ${Math.round(cardW * 0.28)}px var(--font-display), serif`;
-      ctx.fillStyle = "#F6C90E";
+      ctx.fillStyle = "rgba(246, 201, 14, 0.7)";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(`T${i + 1}`, cardX + cardW / 2, cardY + cardH / 2);
     }
 
-    // Bottom "BUILDER" badge on photo
-    const bBadgeH = size * 0.03;
+    // Bottom title ribbon badge on photo
+    const bBadgeH = size * 0.034;
     const bBadgeY = cardY + cardH - bBadgeH;
-    ctx.fillStyle = "rgba(15, 76, 51, 0.95)";
+    ctx.fillStyle = "#E8177D";
     ctx.fillRect(cardX, bBadgeY, cardW, bBadgeH);
 
-    ctx.font = `700 ${Math.round(size * 0.014)}px var(--font-mono), monospace`;
-    ctx.fillStyle = "#F6C90E";
+    const titleText = (m.title || "BUILDER").toUpperCase();
+    ctx.font = `700 ${Math.round(size * 0.013)}px var(--font-mono), monospace`;
+    ctx.fillStyle = "#FBF6E9";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("BUILDER", cardX + cardW / 2, bBadgeY + bBadgeH / 2 + 1);
+    ctx.fillText(titleText, cardX + cardW / 2, bBadgeY + bBadgeH / 2 + 1);
 
     ctx.restore();
 
@@ -662,22 +691,29 @@ export async function renderTeamFrameToCanvas(
     const textY = cardY + cardH + size * 0.025;
     const nameFontSize = Math.round(size * 0.024);
     ctx.font = `800 ${nameFontSize}px var(--font-display), "Fraunces", serif`;
-    ctx.fillStyle = "#0F4C33";
+    ctx.fillStyle = "#FBF6E9";
     ctx.textAlign = "center";
     ctx.textBaseline = "top";
     ctx.fillText(m.name || `Teammate ${i + 1}`, cardX + cardW / 2, textY);
 
     const roleFontSize = Math.round(size * 0.016);
     ctx.font = `600 ${roleFontSize}px var(--font-mono), "IBM Plex Mono", monospace`;
-    ctx.fillStyle = "#E8177D";
-    ctx.fillText(`⚡ ${m.role || "Builder"}`, cardX + cardW / 2, textY + nameFontSize * 1.3);
+    ctx.fillStyle = "#F6C90E";
+    ctx.fillText(`⚡ ${m.role || "Builder"}`, cardX + cardW / 2, textY + nameFontSize * 1.35);
+
+    if (m.stack) {
+      const stackY = textY + nameFontSize * 1.35 + roleFontSize * 1.4;
+      ctx.font = `500 ${Math.round(size * 0.014)}px var(--font-mono), monospace`;
+      ctx.fillStyle = "rgba(246, 201, 14, 0.85)";
+      ctx.fillText(m.stack, cardX + cardW / 2, stackY);
+    }
   }
 
   // 4. Footer Section
-  const footerY = size * 0.78;
+  const footerY = size * 0.77;
 
   // Horizontal divider line
-  ctx.strokeStyle = "rgba(15, 76, 51, 0.15)";
+  ctx.strokeStyle = "rgba(246, 201, 14, 0.2)";
   ctx.lineWidth = 2;
   ctx.beginPath();
   ctx.moveTo(marginX, footerY);
@@ -689,17 +725,17 @@ export async function renderTeamFrameToCanvas(
   const pillW = size * 0.22;
   const pillH = size * 0.035;
   roundRect(ctx, marginX, taglineY, pillW, pillH, pillH / 2);
-  ctx.fillStyle = "#F6C90E";
+  ctx.fillStyle = "#E8177D";
   ctx.fill();
 
   ctx.font = `800 ${Math.round(size * 0.014)}px var(--font-mono), monospace`;
-  ctx.fillStyle = "#0B2118";
+  ctx.fillStyle = "#FBF6E9";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText(`${count} BUILDERS TEAM`, marginX + pillW / 2, taglineY + pillH / 2 + 1);
 
   ctx.font = `600 ${Math.round(size * 0.018)}px var(--font-mono), monospace`;
-  ctx.fillStyle = "rgba(15, 76, 51, 0.75)";
+  ctx.fillStyle = "rgba(251, 246, 233, 0.9)";
   ctx.textAlign = "left";
   ctx.fillText(
     fields.tagline || "Official Goa Expedition Team",
@@ -711,7 +747,7 @@ export async function renderTeamFrameToCanvas(
   const teamTitleY = taglineY + pillH + size * 0.02;
   const teamTitleSize = Math.round(size * 0.052);
   ctx.font = `900 ${teamTitleSize}px var(--font-display), "Fraunces", serif`;
-  ctx.fillStyle = "#0F4C33";
+  ctx.fillStyle = "#F6C90E";
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
   ctx.fillText(`TEAM ${fields.teamName || "ALPHA"}`, marginX, teamTitleY);
@@ -725,10 +761,10 @@ export async function renderTeamFrameToCanvas(
   const hashY = teamTitleY + size * 0.01;
 
   roundRect(ctx, hashX, hashY, hashW, hashH, hashH / 2);
-  ctx.fillStyle = "#E8177D";
+  ctx.fillStyle = "#F6C90E";
   ctx.fill();
 
-  ctx.fillStyle = "#FBF6E9";
+  ctx.fillStyle = "#0B2118";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText(hashText, hashX + hashW / 2, hashY + hashH / 2 + 1);
@@ -736,7 +772,7 @@ export async function renderTeamFrameToCanvas(
   // Bottom Footer Meta
   const metaY = size - size * 0.04;
   ctx.font = `600 ${Math.round(size * 0.015)}px var(--font-mono), monospace`;
-  ctx.fillStyle = "rgba(15, 76, 51, 0.6)";
+  ctx.fillStyle = "rgba(251, 246, 233, 0.6)";
 
   ctx.textAlign = "left";
   ctx.fillText("1080 × 1080 RETINA EXPORT", marginX, metaY);

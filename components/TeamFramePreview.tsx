@@ -17,42 +17,54 @@ export const TeamFramePreview = forwardRef<HTMLDivElement, TeamFramePreviewProps
       <div
         ref={ref}
         style={{ width: `${width}px`, height: `${width}px` }}
-        className="relative flex flex-col justify-between overflow-hidden rounded-[28px] bg-sand p-6 text-jungle shadow-2xl transition-all duration-300 dark:bg-sand dark:text-jungle border-4 border-jungle"
+        className="relative flex flex-col justify-between overflow-hidden rounded-[28px] bg-[#0A3A27] p-5 sm:p-6 text-sand shadow-2xl border-2 border-marigold/30 max-w-full"
       >
-        {/* Palm frond decoration top right */}
-        <div className="pointer-events-none absolute -right-6 -top-6 opacity-30">
-          <Palm color="#0F4C33" className="h-44 w-44" />
-        </div>
+        {/* Ambient radial gold glow backdrop */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "radial-gradient(circle at 85% 0%, rgba(246,201,14,0.22), transparent 60%)"
+          }}
+        />
 
-        {/* Live Badge top right */}
-        <div className="absolute right-6 top-6 flex items-center gap-2">
-          <div className="flex items-center gap-1.5 rounded-full bg-jungle/90 px-3 py-1 text-[11px] font-bold text-sand shadow-sm">
-            <span className="h-2 w-2 rounded-full bg-marigold animate-pulse" />
-            LIVE
-          </div>
-        </div>
+        {/* Dotted seal border inset */}
+        <div className="dotted-border-gold absolute inset-3 rounded-[22px] opacity-70 pointer-events-none" />
 
-        {/* Header */}
-        <div className="relative z-10">
-          <div className="flex items-center gap-2">
-            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-jungle font-display text-xs font-bold text-marigold">
-              H
-            </span>
-            <h3 className="font-display text-xl font-extrabold tracking-tight text-jungle">
-              HACKER HOUSE GOA
+        {/* Palm frond decorations */}
+        <Palm color="#F6C90E" className="absolute -left-3 top-3 h-24 w-24 opacity-80 -scale-x-100 pointer-events-none" />
+        <Palm color="#E8177D" className="absolute -right-3 top-3 h-24 w-24 opacity-70 pointer-events-none" />
+
+        {/* Header Row */}
+        <div className="relative z-10 flex items-start justify-between">
+          <div>
+            <p className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-marigold font-semibold">
+              Official Team Pass
+            </p>
+            <h3 className="font-display text-base sm:text-xl font-bold leading-tight text-[#FBF6E9]">
+              Hacker House <span className="text-marigold">Goa</span>
             </h3>
           </div>
-          <p className="font-mono text-[11px] font-semibold tracking-[0.2em] text-jungle/60">
-            OFFICIAL TEAM PASS · 2026
-          </p>
+
+          <div className="flex items-center gap-1.5 rounded-full border border-marigold/40 bg-black/40 px-2.5 py-1 font-mono text-[10px] font-medium text-marigold backdrop-blur-md">
+            <span className="h-1.5 w-1.5 rounded-full bg-marigold animate-pulse" />
+            <span>28–31 OCT 2026</span>
+          </div>
         </div>
 
-        {/* Center: Team Member Arched Cards */}
-        <div className="relative z-10 my-auto grid gap-4 py-2" style={{ gridTemplateColumns: `repeat(${fields.memberCount}, minmax(0, 1fr))` }}>
+        {/* Center: Team Member Cards */}
+        <div
+          className="relative z-10 my-auto grid gap-3 sm:gap-4 py-2 items-center w-full"
+          style={{ gridTemplateColumns: `repeat(${fields.memberCount}, minmax(0, 1fr))` }}
+        >
           {members.map((m, idx) => (
             <div key={idx} className="flex flex-col items-center">
-              {/* Arched Photo Frame */}
-              <div className="relative flex h-36 w-full max-w-[130px] flex-col items-center justify-end overflow-hidden rounded-t-[45px] rounded-b-[16px] border-4 border-jungle bg-jungle-deep shadow-md sm:h-44 sm:max-w-[150px]">
+              {/* Photo Double Ring Frame */}
+              <div
+                className="relative flex h-32 w-full max-w-[125px] flex-col items-center justify-end overflow-hidden rounded-[22px] bg-[#06261A] shadow-xl sm:h-40 sm:max-w-[145px]"
+                style={{
+                  boxShadow: "0 0 0 3px #0A3A27, 0 0 0 6px #F6C90E, 0 14px 28px rgba(0,0,0,0.5)"
+                }}
+              >
                 {m.imageUrl ? (
                   <div className="absolute inset-0 overflow-hidden">
                     {/* eslint-disable-next-html-element-suppress */}
@@ -67,50 +79,55 @@ export const TeamFramePreview = forwardRef<HTMLDivElement, TeamFramePreviewProps
                     />
                   </div>
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-jungle/80 text-sand">
-                    <span className="font-display text-3xl font-extrabold text-marigold opacity-80">
+                  <div className="flex h-full w-full items-center justify-center bg-black/30 text-sand">
+                    <span className="font-display text-2xl sm:text-3xl font-black text-marigold/70">
                       T{idx + 1}
                     </span>
                   </div>
                 )}
-                {/* Bottom Builder Pill Label */}
-                <div className="relative z-10 w-full bg-jungle/90 py-1 text-center font-mono text-[9px] font-bold uppercase tracking-[0.15em] text-marigold">
-                  BUILDER
+                {/* Bottom Title/Builder Ribbon */}
+                <div className="relative z-10 w-full bg-hibiscus py-0.5 text-center font-mono text-[8px] sm:text-[9px] font-bold uppercase tracking-[0.15em] text-[#FBF6E9] shadow-md truncate px-1">
+                  {m.title || "BUILDER"}
                 </div>
               </div>
 
               {/* Name & Role */}
-              <p className="mt-2 font-display text-sm font-extrabold text-jungle text-center truncate max-w-[140px]">
+              <p className="mt-2.5 font-display text-xs sm:text-sm font-bold text-[#FBF6E9] text-center truncate w-full px-1">
                 {m.name || `Teammate ${idx + 1}`}
               </p>
-              <p className="font-mono text-[10px] font-semibold text-hibiscus text-center truncate max-w-[140px]">
+              <p className="font-mono text-[10px] sm:text-[11px] font-semibold text-marigold text-center truncate w-full px-1">
                 ⚡ {m.role || "Builder"}
               </p>
+              {m.stack && (
+                <span className="mt-1 inline-block rounded-full bg-marigold/15 px-2 py-0.5 font-mono text-[9px] font-medium text-marigold truncate max-w-full">
+                  {m.stack}
+                </span>
+              )}
             </div>
           ))}
         </div>
 
-        {/* Footer */}
-        <div className="relative z-10 border-t-2 border-jungle/10 pt-3">
+        {/* Footer Section */}
+        <div className="relative z-10 border-t border-marigold/20 pt-2.5">
           <div className="flex items-center gap-2">
-            <span className="rounded-full bg-marigold px-2.5 py-0.5 font-mono text-[10px] font-extrabold uppercase tracking-wider text-ink shadow-xs">
+            <span className="rounded-full bg-hibiscus px-2.5 py-0.5 font-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#FBF6E9] shadow-xs shrink-0">
               {fields.memberCount} BUILDERS TEAM
             </span>
-            <span className="font-mono text-[11px] font-semibold text-jungle/70 truncate">
+            <span className="font-mono text-[10px] sm:text-[11px] font-medium text-[#FBF6E9]/90 truncate">
               {fields.tagline || "Official Goa Expedition Team"}
             </span>
           </div>
 
           <div className="mt-1 flex items-baseline justify-between">
-            <h2 className="font-display text-2xl font-black uppercase tracking-tight text-jungle">
+            <h2 className="font-display text-xl sm:text-2xl font-black uppercase tracking-tight text-marigold drop-shadow-sm truncate pr-2">
               TEAM {fields.teamName || "ALPHA"}
             </h2>
-            <span className="rounded-full bg-hibiscus px-3 py-0.5 font-mono text-[11px] font-bold text-sand">
+            <span className="rounded-full bg-marigold px-2.5 py-0.5 font-mono text-[10px] sm:text-[11px] font-bold text-[#0B2118] shadow-sm shrink-0">
               #FrameInGoa
             </span>
           </div>
 
-          <div className="mt-1 flex items-center justify-between font-mono text-[9px] opacity-60">
+          <div className="mt-1 flex items-center justify-between font-mono text-[8px] sm:text-[9px] text-[#FBF6E9]/50">
             <span>1080 × 1080 RETINA EXPORT</span>
             <span>GOA, INDIA</span>
           </div>
@@ -120,3 +137,4 @@ export const TeamFramePreview = forwardRef<HTMLDivElement, TeamFramePreviewProps
   }
 );
 TeamFramePreview.displayName = "TeamFramePreview";
+

@@ -10,9 +10,9 @@ interface FormatToggleProps {
 }
 
 const OPTIONS: { id: OutputFormat; label: string; sub: string }[] = [
-  { id: "pfp", label: "PFP Frame", sub: "Circular profile picture" },
+  { id: "pfp", label: "Profile Frame", sub: "Circular avatar frame" },
   { id: "card", label: "Builder ID", sub: "Single identity card" },
-  { id: "team", label: "Team Frame", sub: "2 or 3 team members pass" }
+  { id: "team", label: "Team Pass", sub: "2 or 3 members pass" }
 ];
 
 export function FormatToggle({ value, onChange }: FormatToggleProps) {

@@ -203,8 +203,8 @@ export function GeneratorSection() {
         </div>
 
         {/* Right Column: Live Preview & Downloads */}
-        <div className="flex flex-col items-center gap-6">
-          <div className="relative flex min-h-[360px] w-full items-center justify-center">
+        <div className="flex flex-col items-center gap-6 w-full">
+          <div className="relative flex min-h-[340px] sm:min-h-[380px] w-full items-center justify-center overflow-hidden py-2">
             <AnimatePresence mode="wait">
               {isGenerating ? (
                 <motion.div
@@ -222,41 +222,44 @@ export function GeneratorSection() {
                   <p className="font-mono text-xs uppercase tracking-[0.2em] opacity-60">Generating preview…</p>
                 </motion.div>
               ) : (
-                <motion.div
-                  key={format}
-                  initial={{ opacity: 0, scale: 0.92 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.92 }}
-                  transition={{ type: "spring", bounce: 0.25, duration: 0.6 }}
-                >
-                  {format === "pfp" && (
-                    <FramePreview
-                      ref={previewRef}
-                      imageUrl={image?.url ?? null}
-                      theme={activeTheme}
-                      transform={singleTransform}
-                      size={360}
-                    />
-                  )}
+                <div className="w-full max-w-full flex justify-center items-center overflow-hidden px-1">
+                  <motion.div
+                    key={format}
+                    initial={{ opacity: 0, scale: 0.92 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.92 }}
+                    transition={{ type: "spring", bounce: 0.25, duration: 0.6 }}
+                    className="shrink-0 origin-center transition-transform max-[520px]:scale-[0.85] max-[420px]:scale-[0.74] max-[375px]:scale-[0.66]"
+                  >
+                    {format === "pfp" && (
+                      <FramePreview
+                        ref={previewRef}
+                        imageUrl={image?.url ?? null}
+                        theme={activeTheme}
+                        transform={singleTransform}
+                        size={360}
+                      />
+                    )}
 
-                  {format === "card" && (
-                    <BuilderCard
-                      ref={previewRef}
-                      imageUrl={image?.url ?? null}
-                      theme={activeTheme}
-                      fields={fields}
-                      width={480}
-                    />
-                  )}
+                    {format === "card" && (
+                      <BuilderCard
+                        ref={previewRef}
+                        imageUrl={image?.url ?? null}
+                        theme={activeTheme}
+                        fields={fields}
+                        width={480}
+                      />
+                    )}
 
-                  {format === "team" && (
-                    <TeamFramePreview
-                      ref={previewRef}
-                      fields={teamFields}
-                      width={460}
-                    />
-                  )}
-                </motion.div>
+                    {format === "team" && (
+                      <TeamFramePreview
+                        ref={previewRef}
+                        fields={teamFields}
+                        width={460}
+                      />
+                    )}
+                  </motion.div>
+                </div>
               )}
             </AnimatePresence>
           </div>
