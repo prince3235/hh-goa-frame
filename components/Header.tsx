@@ -14,9 +14,7 @@ export function Header() {
             HH Goa <span className="text-hibiscus">2026</span>
           </span>
         </a>
-        <nav className="hidden items-center gap-6 text-sm font-semibold sm:flex">
-          <a href="#generator" className="focus-ring opacity-80 hover:opacity-100">Generator</a>
-        </nav>
+
         <div className="flex items-center gap-3">
           <ModeToggle />
         </div>
