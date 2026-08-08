@@ -54,9 +54,6 @@ export function Hero() {
             <Button size="lg" onClick={() => document.getElementById("generator")?.scrollIntoView({ behavior: "smooth" })}>
               Start generating
             </Button>
-            <Button variant="ghost" size="lg" className="border-sand/40 text-sand" onClick={() => document.getElementById("how")?.scrollIntoView({ behavior: "smooth" })}>
-              See how it works
-            </Button>
           </div>
         </motion.div>
 

@@ -16,8 +16,6 @@ export function Header() {
         </a>
         <nav className="hidden items-center gap-6 text-sm font-semibold sm:flex">
           <a href="#generator" className="focus-ring opacity-80 hover:opacity-100">Generator</a>
-          <a href="#how" className="focus-ring opacity-80 hover:opacity-100">How it works</a>
-          <a href="#features" className="focus-ring opacity-80 hover:opacity-100">Features</a>
         </nav>
         <div className="flex items-center gap-3">
           <ModeToggle />
