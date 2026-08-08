@@ -5,7 +5,7 @@ import { Download, Twitter, Check, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { exportFrameOrCard, downloadDataUrl, dataUrlToFile } from "@/lib/export-image";
 import { HASHTAG, SHARE_CAPTIONS } from "@/lib/constants";
-import { ThemeDefinition, BuilderFields, OutputFormat } from "@/types";
+import { ThemeDefinition, BuilderFields, OutputFormat, TeamFields } from "@/types";
 
 interface ResultActionsProps {
   nodeRef: React.RefObject<HTMLDivElement | null>;
@@ -15,6 +15,7 @@ interface ResultActionsProps {
   theme?: ThemeDefinition;
   imageUrl?: string | null;
   fields?: BuilderFields;
+  teamFields?: TeamFields;
 }
 
 export function ResultActions({
@@ -24,7 +25,8 @@ export function ResultActions({
   format = "pfp",
   theme,
   imageUrl,
-  fields
+  fields,
+  teamFields
 }: ResultActionsProps) {
   const [isExporting, setIsExporting] = useState<"download" | "share" | null>(null);
   const [downloaded, setDownloaded] = useState(false);
@@ -38,6 +40,7 @@ export function ResultActions({
         imageUrl: imageUrl ?? null,
         theme,
         fields,
+        teamFields,
         node: nodeRef.current
       });
     }

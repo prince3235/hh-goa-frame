@@ -509,3 +509,242 @@ export async function renderCardToCanvas(
   ctx.restore();
   return canvas.toDataURL("image/png");
 }
+
+/**
+ * Renders the official Team Pass card directly to Canvas.
+ */
+export async function renderTeamFrameToCanvas(
+  fields: TeamFields,
+  size = 1080
+): Promise<string> {
+  const canvas = document.createElement("canvas");
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  if (!ctx) throw new Error("Could not get 2D canvas context");
+
+  const radius = size * 0.045;
+
+  ctx.save();
+  roundRect(ctx, 0, 0, size, size, radius);
+  ctx.clip();
+
+  // 1. Background
+  ctx.fillStyle = "#FBF6E9"; // Sand
+  ctx.fillRect(0, 0, size, size);
+
+  // Border frame
+  ctx.strokeStyle = "#0F4C33";
+  ctx.lineWidth = 10;
+  roundRect(ctx, 5, 5, size - 10, size - 10, radius);
+  ctx.stroke();
+
+  // Palm frond watermark in top right
+  drawPalm(ctx, size * 0.88, size * 0.12, size * 0.0022, "#0F4C33", false, 0.25);
+
+  // 2. Top Header
+  const marginX = size * 0.06;
+  const marginTop = size * 0.08;
+
+  // Title: "HACKER HOUSE GOA"
+  ctx.font = `800 ${Math.round(size * 0.038)}px var(--font-display), "Fraunces", serif`;
+  ctx.fillStyle = "#0F4C33";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "top";
+  ctx.fillText("HACKER HOUSE GOA", marginX, marginTop);
+
+  // Subtitle: "OFFICIAL TEAM PASS · 2026"
+  ctx.font = `600 ${Math.round(size * 0.018)}px var(--font-mono), "IBM Plex Mono", monospace`;
+  ctx.fillStyle = "rgba(15, 76, 51, 0.7)";
+  ctx.fillText("OFFICIAL TEAM PASS · 2026", marginX, marginTop + size * 0.048);
+
+  // Live pill tag top right
+  const liveX = size - marginX - size * 0.12;
+  const liveY = marginTop;
+  const liveW = size * 0.12;
+  const liveH = size * 0.04;
+  roundRect(ctx, liveX, liveY, liveW, liveH, liveH / 2);
+  ctx.fillStyle = "#0F4C33";
+  ctx.fill();
+
+  ctx.fillStyle = "#F6C90E"; // Marigold dot
+  ctx.beginPath();
+  ctx.arc(liveX + liveW * 0.25, liveY + liveH / 2, size * 0.007, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.font = `700 ${Math.round(size * 0.016)}px var(--font-mono), monospace`;
+  ctx.fillStyle = "#FBF6E9";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("LIVE", liveX + liveW * 0.62, liveY + liveH / 2 + 1);
+
+  // 3. Middle Team Members (2 or 3)
+  const count = fields.memberCount;
+  const members = fields.members.slice(0, count);
+
+  const cardContainerWidth = size - marginX * 2;
+  const cardGap = size * 0.04;
+  const cardW = (cardContainerWidth - cardGap * (count - 1)) / count;
+  const cardH = size * 0.38;
+  const cardY = size * 0.28;
+
+  for (let i = 0; i < count; i++) {
+    const m = members[i];
+    const cardX = marginX + i * (cardW + cardGap);
+
+    // Arched Top Container
+    ctx.save();
+    const archRadius = cardW * 0.35;
+    ctx.beginPath();
+    ctx.moveTo(cardX, cardY + cardH);
+    ctx.lineTo(cardX, cardY + archRadius);
+    ctx.quadraticCurveTo(cardX, cardY, cardX + archRadius, cardY);
+    ctx.lineTo(cardX + cardW - archRadius, cardY);
+    ctx.quadraticCurveTo(cardX + cardW, cardY, cardX + cardW, cardY + archRadius);
+    ctx.lineTo(cardX + cardW, cardY + cardH);
+    ctx.closePath();
+
+    ctx.fillStyle = "#0A3A27";
+    ctx.fill();
+
+    ctx.strokeStyle = "#0F4C33";
+    ctx.lineWidth = 6;
+    ctx.stroke();
+
+    ctx.clip();
+
+    // Draw Teammate Photo with transforms
+    if (m.imageUrl) {
+      try {
+        const img = await loadImage(m.imageUrl);
+        const userZoom = m.transform?.zoom || 1.0;
+        const offsetX = (m.transform?.offsetX || 0) * 0.01 * cardW;
+        const offsetY = (m.transform?.offsetY || 0) * 0.01 * cardH;
+
+        const baseScale = Math.max(cardW / img.width, cardH / img.height);
+        const finalScale = baseScale * userZoom;
+
+        const drawWidth = img.width * finalScale;
+        const drawHeight = img.height * finalScale;
+        const drawX = cardX + (cardW - drawWidth) / 2 + offsetX;
+        const drawY = cardY + (cardH - drawHeight) / 2 + offsetY;
+
+        ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
+      } catch {
+        ctx.fillStyle = "#0A3A27";
+        ctx.fillRect(cardX, cardY, cardW, cardH);
+      }
+    } else {
+      ctx.fillStyle = "#0F4C33";
+      ctx.fillRect(cardX, cardY, cardW, cardH);
+      ctx.font = `800 ${Math.round(cardW * 0.28)}px var(--font-display), serif`;
+      ctx.fillStyle = "#F6C90E";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(`T${i + 1}`, cardX + cardW / 2, cardY + cardH / 2);
+    }
+
+    // Bottom "BUILDER" badge on photo
+    const bBadgeH = size * 0.03;
+    const bBadgeY = cardY + cardH - bBadgeH;
+    ctx.fillStyle = "rgba(15, 76, 51, 0.95)";
+    ctx.fillRect(cardX, bBadgeY, cardW, bBadgeH);
+
+    ctx.font = `700 ${Math.round(size * 0.014)}px var(--font-mono), monospace`;
+    ctx.fillStyle = "#F6C90E";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("BUILDER", cardX + cardW / 2, bBadgeY + bBadgeH / 2 + 1);
+
+    ctx.restore();
+
+    // Teammate Name & Role below card
+    const textY = cardY + cardH + size * 0.025;
+    const nameFontSize = Math.round(size * 0.024);
+    ctx.font = `800 ${nameFontSize}px var(--font-display), "Fraunces", serif`;
+    ctx.fillStyle = "#0F4C33";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+    ctx.fillText(m.name || `Teammate ${i + 1}`, cardX + cardW / 2, textY);
+
+    const roleFontSize = Math.round(size * 0.016);
+    ctx.font = `600 ${roleFontSize}px var(--font-mono), "IBM Plex Mono", monospace`;
+    ctx.fillStyle = "#E8177D";
+    ctx.fillText(`⚡ ${m.role || "Builder"}`, cardX + cardW / 2, textY + nameFontSize * 1.3);
+  }
+
+  // 4. Footer Section
+  const footerY = size * 0.78;
+
+  // Horizontal divider line
+  ctx.strokeStyle = "rgba(15, 76, 51, 0.15)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(marginX, footerY);
+  ctx.lineTo(size - marginX, footerY);
+  ctx.stroke();
+
+  // Tagline & Team Pill
+  const taglineY = footerY + size * 0.02;
+  const pillW = size * 0.22;
+  const pillH = size * 0.035;
+  roundRect(ctx, marginX, taglineY, pillW, pillH, pillH / 2);
+  ctx.fillStyle = "#F6C90E";
+  ctx.fill();
+
+  ctx.font = `800 ${Math.round(size * 0.014)}px var(--font-mono), monospace`;
+  ctx.fillStyle = "#0B2118";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(`${count} BUILDERS TEAM`, marginX + pillW / 2, taglineY + pillH / 2 + 1);
+
+  ctx.font = `600 ${Math.round(size * 0.018)}px var(--font-mono), monospace`;
+  ctx.fillStyle = "rgba(15, 76, 51, 0.75)";
+  ctx.textAlign = "left";
+  ctx.fillText(
+    fields.tagline || "Official Goa Expedition Team",
+    marginX + pillW + size * 0.02,
+    taglineY + pillH / 2 + 1
+  );
+
+  // Big Team Name
+  const teamTitleY = taglineY + pillH + size * 0.02;
+  const teamTitleSize = Math.round(size * 0.052);
+  ctx.font = `900 ${teamTitleSize}px var(--font-display), "Fraunces", serif`;
+  ctx.fillStyle = "#0F4C33";
+  ctx.textAlign = "left";
+  ctx.textBaseline = "top";
+  ctx.fillText(`TEAM ${fields.teamName || "ALPHA"}`, marginX, teamTitleY);
+
+  // #FrameInGoa Hashtag Pill
+  const hashText = "#FrameInGoa";
+  ctx.font = `700 ${Math.round(size * 0.018)}px var(--font-mono), monospace`;
+  const hashW = ctx.measureText(hashText).width + size * 0.04;
+  const hashH = size * 0.04;
+  const hashX = size - marginX - hashW;
+  const hashY = teamTitleY + size * 0.01;
+
+  roundRect(ctx, hashX, hashY, hashW, hashH, hashH / 2);
+  ctx.fillStyle = "#E8177D";
+  ctx.fill();
+
+  ctx.fillStyle = "#FBF6E9";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText(hashText, hashX + hashW / 2, hashY + hashH / 2 + 1);
+
+  // Bottom Footer Meta
+  const metaY = size - size * 0.04;
+  ctx.font = `600 ${Math.round(size * 0.015)}px var(--font-mono), monospace`;
+  ctx.fillStyle = "rgba(15, 76, 51, 0.6)";
+
+  ctx.textAlign = "left";
+  ctx.fillText("1080 × 1080 RETINA EXPORT", marginX, metaY);
+
+  ctx.textAlign = "right";
+  ctx.fillText("GOA, INDIA", size - marginX, metaY);
+
+  ctx.restore();
+  return canvas.toDataURL("image/png");
+}
+

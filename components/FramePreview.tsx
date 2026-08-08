@@ -8,6 +8,7 @@ interface FramePreviewProps {
   imageUrl: string | null;
   theme: ThemeDefinition;
   size?: number;
+  transform?: { zoom: number; offsetX: number; offsetY: number };
 }
 
 /**
@@ -15,7 +16,7 @@ interface FramePreviewProps {
  * wrapped in HH Goa 2026 branding. forwardRef exposes the DOM node for PNG export.
  */
 export const FramePreview = forwardRef<HTMLDivElement, FramePreviewProps>(
-  ({ imageUrl, theme, size = 480 }, ref) => {
+  ({ imageUrl, theme, size = 480, transform }, ref) => {
     const showPalms = theme.id === "tropical" || theme.id === "beach" || theme.id === "classic";
 
     return (
@@ -57,8 +58,16 @@ export const FramePreview = forwardRef<HTMLDivElement, FramePreviewProps>(
             }}
           >
             {imageUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={imageUrl} alt="Your uploaded photo, framed" className="h-full w-full object-cover" />
+              // eslint-disable-next-html-element-suppress
+              <img
+                src={imageUrl}
+                alt="Your uploaded photo, framed"
+                style={{
+                  transform: `scale(${transform?.zoom || 1}) translate(${transform?.offsetX || 0}%, ${transform?.offsetY || 0}%)`,
+                  transformOrigin: "center"
+                }}
+                className="h-full w-full object-cover transition-transform duration-100"
+              />
             ) : (
               <div className="h-full w-full bg-black/20 flex items-center justify-center text-sand/40 font-body text-sm">
                 Your photo

@@ -1,6 +1,6 @@
 import { toPng } from "html-to-image";
-import { ThemeDefinition, BuilderFields, OutputFormat } from "@/types";
-import { renderFrameToCanvas, renderCardToCanvas } from "./canvas-renderer";
+import { ThemeDefinition, BuilderFields, OutputFormat, TeamFields } from "@/types";
+import { renderFrameToCanvas, renderCardToCanvas, renderTeamFrameToCanvas } from "./canvas-renderer";
 
 /**
  * High-performance, 100% bulletproof image exporter that renders directly via HTML5 Canvas
@@ -11,17 +11,21 @@ export async function exportFrameOrCard({
   imageUrl,
   theme,
   fields,
+  teamFields,
   node
 }: {
   format: OutputFormat;
   imageUrl: string | null;
   theme: ThemeDefinition;
   fields?: BuilderFields;
+  teamFields?: TeamFields;
   node?: HTMLElement | null;
 }): Promise<string> {
   try {
     if (format === "pfp") {
       return await renderFrameToCanvas(imageUrl, theme, 1080);
+    } else if (format === "team" && teamFields) {
+      return await renderTeamFrameToCanvas(teamFields, 1080);
     } else {
       return await renderCardToCanvas(
         imageUrl,
