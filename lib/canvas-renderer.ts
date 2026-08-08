@@ -1,4 +1,4 @@
-import { ThemeDefinition, BuilderFields } from "@/types";
+import { ThemeDefinition, BuilderFields, TeamFields } from "@/types";
 
 /**
  * Loads an image from a URL into an HTMLImageElement safely.
