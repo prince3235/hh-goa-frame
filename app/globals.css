@@ -1,0 +1,172 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: "Fraunces", "Georgia", serif;
+  --font-body: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #FBF6E9;
+  color: #0B2118;
+  font-family: var(--font-body);
+}
+
+.dark body {
+  background-color: #0A3A27;
+  color: #FBF6E9;
+}
+
+/* Dotted marquee border, echoes the HH Goa event badge */
+.dotted-border {
+  background-image: radial-gradient(circle, #E8177D 1.4px, transparent 1.6px);
+  background-size: 10px 10px;
+  background-repeat: repeat;
+}
+
+.dotted-border-gold {
+  background-image: radial-gradient(circle, #F6C90E 1.4px, transparent 1.6px);
+  background-size: 10px 10px;
+  background-repeat: repeat;
+}
+
+/* Scallop / seal frame edge used on the hero + result card */
+.seal-frame {
+  clip-path: polygon(
+    50% 0%, 58% 4%, 66% 1%, 72% 7%, 80% 5%, 84% 12%, 92% 12%, 93% 20%,
+    100% 24%, 97% 31%, 100% 38%, 94% 43%, 96% 51%, 89% 54%, 90% 62%,
+    82% 63%, 80% 71%, 72% 69%, 67% 76%, 59% 72%, 52% 78%, 46% 72%,
+    38% 76%, 33% 69%, 25% 71%, 23% 63%, 15% 62%, 16% 54%, 9% 51%,
+    11% 43%, 5% 38%, 8% 31%, 5% 24%, 12% 20%, 13% 12%, 21% 12%,
+    25% 5%, 33% 7%, 39% 1%, 47% 4%
+  );
+}
+
+/* Ambient Background Animations */
+@keyframes orb-float-1 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(35px, -45px) scale(1.15);
+  }
+  66% {
+    transform: translate(-25px, 20px) scale(0.92);
+  }
+}
+
+@keyframes orb-float-2 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(-40px, 35px) scale(1.1);
+  }
+  66% {
+    transform: translate(30px, -30px) scale(0.95);
+  }
+}
+
+@keyframes orb-float-3 {
+  0%, 100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  50% {
+    transform: translate(20px, 30px) scale(1.2);
+  }
+}
+
+@keyframes palm-sway-left {
+  0%, 100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  50% {
+    transform: rotate(-3.5deg) translateY(-4px);
+  }
+}
+
+@keyframes palm-sway-right {
+  0%, 100% {
+    transform: rotate(0deg) translateY(0);
+  }
+  50% {
+    transform: rotate(3.5deg) translateY(-4px);
+  }
+}
+
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.animate-orb-1 {
+  animation: orb-float-1 18s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-orb-2 {
+  animation: orb-float-2 22s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-orb-3 {
+  animation: orb-float-3 15s ease-in-out infinite;
+  will-change: transform;
+}
+
+.animate-palm-left {
+  animation: palm-sway-left 8s ease-in-out infinite;
+  transform-origin: bottom left;
+}
+
+.animate-palm-right {
+  animation: palm-sway-right 9s ease-in-out infinite;
+  transform-origin: bottom right;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 6s ease-in-out infinite;
+}
+
+/* Feature card glow hover */
+.card-hover-glow {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card-hover-glow:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px -8px rgba(10, 58, 39, 0.15), 0 0 0 1px rgba(246, 201, 14, 0.3);
+}
+
+.dark .card-hover-glow:hover {
+  box-shadow: 0 16px 32px -8px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(246, 201, 14, 0.4);
+}
+
+::selection {
+  background: #F6C90E;
+  color: #0A3A27;
+}
+
+.focus-ring:focus-visible {
+  outline: 3px solid #F6C90E;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
