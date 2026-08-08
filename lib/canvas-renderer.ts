@@ -529,8 +529,8 @@ export async function renderTeamFrameToCanvas(
   roundRect(ctx, 0, 0, size, size, radius);
   ctx.clip();
 
-  // 1. Background (Jungle Green + Radial Gold Glow)
-  ctx.fillStyle = "#0A3A27"; // Deep Jungle Green
+  // 1. Background (Deep Dark Jungle Green Shade)
+  ctx.fillStyle = "#052016";
   ctx.fillRect(0, 0, size, size);
 
   const grad = ctx.createRadialGradient(
@@ -541,27 +541,31 @@ export async function renderTeamFrameToCanvas(
     0,
     size * 0.65
   );
-  grad.addColorStop(0, "rgba(246,201,14,0.22)");
+  grad.addColorStop(0, "rgba(246,201,14,0.15)");
   grad.addColorStop(1, "transparent");
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, size, size);
 
-  // Border frame (Gold dotted border)
+  // Border frame (Gold dashed border perimeter)
   const borderInset = size * 0.032;
-  drawDottedBorder(
+  ctx.save();
+  ctx.strokeStyle = "rgba(246, 201, 14, 0.4)";
+  ctx.lineWidth = size * 0.0025;
+  ctx.setLineDash([size * 0.015, size * 0.01]);
+  roundRect(
     ctx,
     borderInset,
     borderInset,
     size - borderInset * 2,
     size - borderInset * 2,
-    "#F6C90E",
-    size * 0.0035,
-    size * 0.02
+    radius * 0.7
   );
+  ctx.stroke();
+  ctx.restore();
 
   // Palm fronds in top corners
-  drawPalm(ctx, size * 0.03, size * 0.05, size * 0.0016, "#F6C90E", true, 0.85);
-  drawPalm(ctx, size * 0.82, size * 0.05, size * 0.0016, "#E8177D", false, 0.75);
+  drawPalm(ctx, size * 0.03, size * 0.05, size * 0.0016, "#F6C90E", true, 0.75);
+  drawPalm(ctx, size * 0.82, size * 0.05, size * 0.0016, "#E8177D", false, 0.65);
 
   // 2. Top Header
   const marginX = size * 0.065;
@@ -579,7 +583,7 @@ export async function renderTeamFrameToCanvas(
   ctx.fillText("GOA", marginX + hhWidth, marginTop + size * 0.022);
 
   // Subtitle: "OFFICIAL TEAM PASS"
-  ctx.font = `600 ${Math.round(size * 0.016)}px var(--font-mono), "IBM Plex Mono", monospace`;
+  ctx.font = `700 ${Math.round(size * 0.016)}px var(--font-mono), "IBM Plex Mono", monospace`;
   ctx.fillStyle = "#F6C90E";
   ctx.fillText("OFFICIAL TEAM PASS", marginX, marginTop);
 
@@ -592,9 +596,9 @@ export async function renderTeamFrameToCanvas(
   const dateY = marginTop + size * 0.005;
 
   roundRect(ctx, dateX, dateY, dateW, dateH, dateH / 2);
-  ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
+  ctx.fillStyle = "rgba(2, 18, 12, 0.8)";
   ctx.fill();
-  ctx.strokeStyle = "rgba(246, 201, 14, 0.4)";
+  ctx.strokeStyle = "rgba(246, 201, 14, 0.5)";
   ctx.lineWidth = 1.5;
   ctx.stroke();
 
@@ -615,8 +619,8 @@ export async function renderTeamFrameToCanvas(
   const cardContainerWidth = size - marginX * 2;
   const cardGap = size * 0.04;
   const cardW = (cardContainerWidth - cardGap * (count - 1)) / count;
-  const cardH = size * 0.36;
-  const cardY = size * 0.28;
+  const cardH = size * 0.34;
+  const cardY = size * 0.27;
 
   for (let i = 0; i < count; i++) {
     const m = members[i];
@@ -624,13 +628,13 @@ export async function renderTeamFrameToCanvas(
 
     // Rounded Card Container
     ctx.save();
-    const cardRadius = cardW * 0.2;
+    const cardRadius = cardW * 0.18;
     roundRect(ctx, cardX, cardY, cardW, cardH, cardRadius);
 
-    ctx.fillStyle = "#06261A";
-    ctx.shadowColor = "rgba(0,0,0,0.5)";
-    ctx.shadowBlur = 18;
-    ctx.shadowOffsetY = 8;
+    ctx.fillStyle = "#02120C";
+    ctx.shadowColor = "rgba(0,0,0,0.6)";
+    ctx.shadowBlur = 20;
+    ctx.shadowOffsetY = 10;
     ctx.fill();
     ctx.shadowColor = "transparent";
 
@@ -659,14 +663,14 @@ export async function renderTeamFrameToCanvas(
 
         ctx.drawImage(img, drawX, drawY, drawWidth, drawHeight);
       } catch {
-        ctx.fillStyle = "#06261A";
+        ctx.fillStyle = "#02120C";
         ctx.fillRect(cardX, cardY, cardW, cardH);
       }
     } else {
-      ctx.fillStyle = "#06261A";
+      ctx.fillStyle = "#02120C";
       ctx.fillRect(cardX, cardY, cardW, cardH);
       ctx.font = `800 ${Math.round(cardW * 0.28)}px var(--font-display), serif`;
-      ctx.fillStyle = "rgba(246, 201, 14, 0.7)";
+      ctx.fillStyle = "rgba(246, 201, 14, 0.8)";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(`T${i + 1}`, cardX + cardW / 2, cardY + cardH / 2);
@@ -687,44 +691,52 @@ export async function renderTeamFrameToCanvas(
 
     ctx.restore();
 
-    // Teammate Name & Role below card
-    const textY = cardY + cardH + size * 0.025;
-    const nameFontSize = Math.round(size * 0.024);
+    // High Contrast Teammate Name & Role Dark Box below card
+    const boxY = cardY + cardH + size * 0.02;
+    const boxH = size * 0.12;
+    roundRect(ctx, cardX, boxY, cardW, boxH, size * 0.012);
+    ctx.fillStyle = "rgba(2, 18, 12, 0.9)";
+    ctx.fill();
+    ctx.strokeStyle = "rgba(246, 201, 14, 0.2)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    const nameFontSize = Math.round(size * 0.022);
     ctx.font = `800 ${nameFontSize}px var(--font-display), "Fraunces", serif`;
     ctx.fillStyle = "#FBF6E9";
     ctx.textAlign = "center";
     ctx.textBaseline = "top";
-    ctx.fillText(m.name || `Teammate ${i + 1}`, cardX + cardW / 2, textY);
+    ctx.fillText(m.name || `Teammate ${i + 1}`, cardX + cardW / 2, boxY + size * 0.012);
 
-    const roleFontSize = Math.round(size * 0.016);
-    ctx.font = `600 ${roleFontSize}px var(--font-mono), "IBM Plex Mono", monospace`;
+    const roleFontSize = Math.round(size * 0.015);
+    ctx.font = `700 ${roleFontSize}px var(--font-mono), "IBM Plex Mono", monospace`;
     ctx.fillStyle = "#F6C90E";
-    ctx.fillText(`⚡ ${m.role || "Builder"}`, cardX + cardW / 2, textY + nameFontSize * 1.35);
+    ctx.fillText(`⚡ ${m.role || "Builder"}`, cardX + cardW / 2, boxY + size * 0.012 + nameFontSize * 1.25);
 
     if (m.stack) {
-      const stackY = textY + nameFontSize * 1.35 + roleFontSize * 1.4;
-      ctx.font = `500 ${Math.round(size * 0.014)}px var(--font-mono), monospace`;
-      ctx.fillStyle = "rgba(246, 201, 14, 0.85)";
+      const stackY = boxY + size * 0.012 + nameFontSize * 1.25 + roleFontSize * 1.35;
+      ctx.font = `600 ${Math.round(size * 0.013)}px var(--font-mono), monospace`;
+      ctx.fillStyle = "rgba(246, 201, 14, 0.9)";
       ctx.fillText(m.stack, cardX + cardW / 2, stackY);
     }
   }
 
-  // 4. Footer Section
+  // 4. High-Contrast Footer Section Container
   const footerY = size * 0.77;
+  const footerH = size * 0.18;
 
-  // Horizontal divider line
+  roundRect(ctx, marginX, footerY, cardContainerWidth, footerH, size * 0.014);
+  ctx.fillStyle = "rgba(2, 18, 12, 0.65)";
+  ctx.fill();
   ctx.strokeStyle = "rgba(246, 201, 14, 0.2)";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-  ctx.moveTo(marginX, footerY);
-  ctx.lineTo(size - marginX, footerY);
+  ctx.lineWidth = 1;
   ctx.stroke();
 
   // Tagline & Team Pill
   const taglineY = footerY + size * 0.02;
   const pillW = size * 0.22;
   const pillH = size * 0.035;
-  roundRect(ctx, marginX, taglineY, pillW, pillH, pillH / 2);
+  roundRect(ctx, marginX + size * 0.02, taglineY, pillW, pillH, pillH / 2);
   ctx.fillStyle = "#E8177D";
   ctx.fill();
 
@@ -732,53 +744,53 @@ export async function renderTeamFrameToCanvas(
   ctx.fillStyle = "#FBF6E9";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(`${count} BUILDERS TEAM`, marginX + pillW / 2, taglineY + pillH / 2 + 1);
+  ctx.fillText(`${count} BUILDERS TEAM`, marginX + size * 0.02 + pillW / 2, taglineY + pillH / 2 + 1);
 
   ctx.font = `600 ${Math.round(size * 0.018)}px var(--font-mono), monospace`;
-  ctx.fillStyle = "rgba(251, 246, 233, 0.9)";
+  ctx.fillStyle = "#FBF6E9";
   ctx.textAlign = "left";
   ctx.fillText(
     fields.tagline || "Official Goa Expedition Team",
-    marginX + pillW + size * 0.02,
+    marginX + size * 0.02 + pillW + size * 0.02,
     taglineY + pillH / 2 + 1
   );
 
   // Big Team Name
-  const teamTitleY = taglineY + pillH + size * 0.02;
-  const teamTitleSize = Math.round(size * 0.052);
+  const teamTitleY = taglineY + pillH + size * 0.015;
+  const teamTitleSize = Math.round(size * 0.05);
   ctx.font = `900 ${teamTitleSize}px var(--font-display), "Fraunces", serif`;
   ctx.fillStyle = "#F6C90E";
   ctx.textAlign = "left";
   ctx.textBaseline = "top";
-  ctx.fillText(`TEAM ${fields.teamName || "ALPHA"}`, marginX, teamTitleY);
+  ctx.fillText(`TEAM ${fields.teamName || "ALPHA"}`, marginX + size * 0.02, teamTitleY);
 
   // #FrameInGoa Hashtag Pill
   const hashText = "#FrameInGoa";
   ctx.font = `700 ${Math.round(size * 0.018)}px var(--font-mono), monospace`;
   const hashW = ctx.measureText(hashText).width + size * 0.04;
   const hashH = size * 0.04;
-  const hashX = size - marginX - hashW;
-  const hashY = teamTitleY + size * 0.01;
+  const hashX = size - marginX - size * 0.02 - hashW;
+  const hashY = teamTitleY + size * 0.005;
 
   roundRect(ctx, hashX, hashY, hashW, hashH, hashH / 2);
   ctx.fillStyle = "#F6C90E";
   ctx.fill();
 
-  ctx.fillStyle = "#0B2118";
+  ctx.fillStyle = "#02120C";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillText(hashText, hashX + hashW / 2, hashY + hashH / 2 + 1);
 
   // Bottom Footer Meta
-  const metaY = size - size * 0.04;
-  ctx.font = `600 ${Math.round(size * 0.015)}px var(--font-mono), monospace`;
+  const metaY = footerY + footerH - size * 0.025;
+  ctx.font = `600 ${Math.round(size * 0.014)}px var(--font-mono), monospace`;
   ctx.fillStyle = "rgba(251, 246, 233, 0.6)";
 
   ctx.textAlign = "left";
-  ctx.fillText("1080 × 1080 RETINA EXPORT", marginX, metaY);
+  ctx.fillText("1080 × 1080 RETINA EXPORT", marginX + size * 0.02, metaY);
 
   ctx.textAlign = "right";
-  ctx.fillText("GOA, INDIA", size - marginX, metaY);
+  ctx.fillText("GOA, INDIA", size - marginX - size * 0.02, metaY);
 
   ctx.restore();
   return canvas.toDataURL("image/png");

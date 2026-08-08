@@ -17,35 +17,35 @@ export const TeamFramePreview = forwardRef<HTMLDivElement, TeamFramePreviewProps
       <div
         ref={ref}
         style={{ width: `${width}px`, height: `${width}px` }}
-        className="relative flex flex-col justify-between overflow-hidden rounded-[28px] bg-[#0A3A27] p-5 sm:p-6 text-sand shadow-2xl border-2 border-marigold/30 max-w-full"
+        className="relative flex flex-col justify-between overflow-hidden rounded-[28px] bg-[#052016] p-5 sm:p-6 text-sand shadow-2xl border-2 border-marigold/40 max-w-full"
       >
         {/* Ambient radial gold glow backdrop */}
         <div
           className="absolute inset-0 pointer-events-none"
           style={{
-            background: "radial-gradient(circle at 85% 0%, rgba(246,201,14,0.22), transparent 60%)"
+            background: "radial-gradient(circle at 85% 0%, rgba(246,201,14,0.15), transparent 65%)"
           }}
         />
 
-        {/* Dotted seal border inset */}
-        <div className="dotted-border-gold absolute inset-3 rounded-[22px] opacity-70 pointer-events-none" />
+        {/* Clean gold perimeter dashed border */}
+        <div className="absolute inset-3 rounded-[22px] border border-dashed border-marigold/40 pointer-events-none" />
 
         {/* Palm frond decorations */}
-        <Palm color="#F6C90E" className="absolute -left-3 top-3 h-24 w-24 opacity-80 -scale-x-100 pointer-events-none" />
-        <Palm color="#E8177D" className="absolute -right-3 top-3 h-24 w-24 opacity-70 pointer-events-none" />
+        <Palm color="#F6C90E" className="absolute -left-3 top-3 h-24 w-24 opacity-75 -scale-x-100 pointer-events-none" />
+        <Palm color="#E8177D" className="absolute -right-3 top-3 h-24 w-24 opacity-65 pointer-events-none" />
 
         {/* Header Row */}
         <div className="relative z-10 flex items-start justify-between">
           <div>
-            <p className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-marigold font-semibold">
+            <p className="font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.25em] text-marigold font-bold drop-shadow-xs">
               Official Team Pass
             </p>
-            <h3 className="font-display text-base sm:text-xl font-bold leading-tight text-[#FBF6E9]">
+            <h3 className="font-display text-base sm:text-xl font-bold leading-tight text-[#FBF6E9] drop-shadow-sm">
               Hacker House <span className="text-marigold">Goa</span>
             </h3>
           </div>
 
-          <div className="flex items-center gap-1.5 rounded-full border border-marigold/40 bg-black/40 px-2.5 py-1 font-mono text-[10px] font-medium text-marigold backdrop-blur-md">
+          <div className="flex items-center gap-1.5 rounded-full border border-marigold/50 bg-[#02120C]/80 px-2.5 py-1 font-mono text-[10px] font-semibold text-marigold backdrop-blur-md shadow-sm">
             <span className="h-1.5 w-1.5 rounded-full bg-marigold animate-pulse" />
             <span>28–31 OCT 2026</span>
           </div>
@@ -60,9 +60,9 @@ export const TeamFramePreview = forwardRef<HTMLDivElement, TeamFramePreviewProps
             <div key={idx} className="flex flex-col items-center">
               {/* Photo Double Ring Frame */}
               <div
-                className="relative flex h-32 w-full max-w-[125px] flex-col items-center justify-end overflow-hidden rounded-[22px] bg-[#06261A] shadow-xl sm:h-40 sm:max-w-[145px]"
+                className="relative flex h-32 w-full max-w-[125px] flex-col items-center justify-end overflow-hidden rounded-[22px] bg-[#02120C] shadow-2xl sm:h-40 sm:max-w-[145px]"
                 style={{
-                  boxShadow: "0 0 0 3px #0A3A27, 0 0 0 6px #F6C90E, 0 14px 28px rgba(0,0,0,0.5)"
+                  boxShadow: "0 0 0 3px #052016, 0 0 0 6px #F6C90E, 0 16px 32px rgba(0,0,0,0.6)"
                 }}
               >
                 {m.imageUrl ? (
@@ -79,8 +79,8 @@ export const TeamFramePreview = forwardRef<HTMLDivElement, TeamFramePreviewProps
                     />
                   </div>
                 ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-black/30 text-sand">
-                    <span className="font-display text-2xl sm:text-3xl font-black text-marigold/70">
+                  <div className="flex h-full w-full items-center justify-center bg-black/40 text-sand">
+                    <span className="font-display text-2xl sm:text-3xl font-black text-marigold/80">
                       T{idx + 1}
                     </span>
                   </div>
@@ -91,43 +91,45 @@ export const TeamFramePreview = forwardRef<HTMLDivElement, TeamFramePreviewProps
                 </div>
               </div>
 
-              {/* Name & Role */}
-              <p className="mt-2.5 font-display text-xs sm:text-sm font-bold text-[#FBF6E9] text-center truncate w-full px-1">
-                {m.name || `Teammate ${idx + 1}`}
-              </p>
-              <p className="font-mono text-[10px] sm:text-[11px] font-semibold text-marigold text-center truncate w-full px-1">
-                ⚡ {m.role || "Builder"}
-              </p>
-              {m.stack && (
-                <span className="mt-1 inline-block rounded-full bg-marigold/15 px-2 py-0.5 font-mono text-[9px] font-medium text-marigold truncate max-w-full">
-                  {m.stack}
-                </span>
-              )}
+              {/* Name & Role Text Block */}
+              <div className="mt-2.5 w-full rounded-xl bg-[#02120C]/90 border border-marigold/20 p-2 text-center shadow-md backdrop-blur-xs">
+                <p className="font-display text-xs sm:text-sm font-bold text-[#FBF6E9] truncate">
+                  {m.name || `Teammate ${idx + 1}`}
+                </p>
+                <p className="font-mono text-[10px] sm:text-[11px] font-bold text-marigold truncate mt-0.5">
+                  ⚡ {m.role || "Builder"}
+                </p>
+                {m.stack && (
+                  <span className="mt-1 inline-block rounded-full bg-marigold/20 px-2 py-0.5 font-mono text-[9px] font-semibold text-marigold border border-marigold/30 truncate max-w-full">
+                    {m.stack}
+                  </span>
+                )}
+              </div>
             </div>
           ))}
         </div>
 
         {/* Footer Section */}
-        <div className="relative z-10 border-t border-marigold/20 pt-2.5">
+        <div className="relative z-10 border-t border-marigold/30 pt-2.5 bg-[#02120C]/60 rounded-xl p-2.5 backdrop-blur-xs border border-marigold/15">
           <div className="flex items-center gap-2">
-            <span className="rounded-full bg-hibiscus px-2.5 py-0.5 font-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#FBF6E9] shadow-xs shrink-0">
+            <span className="rounded-full bg-hibiscus px-2.5 py-0.5 font-mono text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-[#FBF6E9] shadow-sm shrink-0">
               {fields.memberCount} BUILDERS TEAM
             </span>
-            <span className="font-mono text-[10px] sm:text-[11px] font-medium text-[#FBF6E9]/90 truncate">
+            <span className="font-mono text-[10px] sm:text-[11px] font-medium text-[#FBF6E9] truncate">
               {fields.tagline || "Official Goa Expedition Team"}
             </span>
           </div>
 
-          <div className="mt-1 flex items-baseline justify-between">
-            <h2 className="font-display text-xl sm:text-2xl font-black uppercase tracking-tight text-marigold drop-shadow-sm truncate pr-2">
+          <div className="mt-1.5 flex items-baseline justify-between">
+            <h2 className="font-display text-xl sm:text-2xl font-black uppercase tracking-tight text-marigold drop-shadow-md truncate pr-2">
               TEAM {fields.teamName || "ALPHA"}
             </h2>
-            <span className="rounded-full bg-marigold px-2.5 py-0.5 font-mono text-[10px] sm:text-[11px] font-bold text-[#0B2118] shadow-sm shrink-0">
+            <span className="rounded-full bg-marigold px-2.5 py-0.5 font-mono text-[10px] sm:text-[11px] font-bold text-[#02120C] shadow-md shrink-0">
               #FrameInGoa
             </span>
           </div>
 
-          <div className="mt-1 flex items-center justify-between font-mono text-[8px] sm:text-[9px] text-[#FBF6E9]/50">
+          <div className="mt-1 flex items-center justify-between font-mono text-[8px] sm:text-[9px] text-[#FBF6E9]/60 font-medium">
             <span>1080 × 1080 RETINA EXPORT</span>
             <span>GOA, INDIA</span>
           </div>
